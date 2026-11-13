@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c1021">
+<title>FOUR / ENSEMBLE | 4楽器のリズムゲーム</title>
+<link rel="stylesheet" href="styles.css?v=1">
+</head><body>
+<main id="game">
+ <div class="top"><div class="logo">FOUR / ENSEMBLE</div><span class="tag">4 TRACKS · 15 NOTES</span></div>
+ <div class="systemLine" role="status" aria-live="polite"><span id="systemStatus" class="systemStatus waiting">● 起動処理を確認中…</span><span class="systemHelp">Safari / Chrome 対応</span></div>
+ <h1>4つの音を、ひとつに。</h1>
+ <p class="sub">ミ ミ ファ ソ ソ ファ ミ レ ド ド レ ミ レ ド ドー<br>4楽器で15音に挑戦！演奏した音とタイミングを記録して、最後に合奏しよう。</p>
+ <div class="stages" id="stages"></div>
+ <section class="panel">
+ <div class="stats"><div><div class="tiny" id="stageLabel">TRACK 01 / 04</div><div class="title" id="instrument">🎹 ピアノ</div></div><div class="score"><span id="score">0</span><small> / 1500</small></div></div>
+ <div class="description" id="instructions"></div>
+ <div class="track"><canvas id="lane" aria-label="ノートレーン"></canvas><div id="overlay" class="overlay"><strong id="overlayTitle">READY?</strong><span id="overlayText">スタートで4拍カウント</span></div><div id="judge" class="judge"></div></div>
+ <div class="progress"><div class="fill" id="progress"></div></div>
+ <div class="noteStrip" id="noteStrip"></div>
+ <div id="controls" class="controls"></div><p class="hint" id="hint"></p>
+ <div class="actions"><button id="start" class="primary" type="button">▶ 演奏スタート</button><button id="retry" class="secondary" type="button">↻ やり直し</button></div>
+ <div id="result" class="result"></div>
+ <button id="next" class="primary next hidden" type="button">次の楽器へ →</button>
+ </section>
+ <section class="final" id="final"><h2>🎼 FINAL ENSEMBLE</h2><p id="finalText">4パートの演奏が終わると、記録した自分の演奏を重ねて聴けるで。</p><div id="finalScore" class="finalScore">-- <small>/ 100</small></div><div class="bottomBtns"><button class="primary" id="ensemblePlay" disabled type="button">♫ 合奏を再生</button><button class="secondary" id="ensembleStop" type="button">■ 停止</button></div></section>
+ <noscript><div class="nojs">JavaScript が無効になっているため、この画面ではゲームを開始できません。GitHub Pages の公開URLをSafariで開いてください。</div></noscript>
+ <div class="foot">BPM <span id="bpmLabel">100</span> · 判定 PERFECT ±45ms / GREAT ±85ms / GOOD ±135ms · 音声合成は端末内</div>
+</main>
+<script defer src="game.js?v=1"></script>
+</body></html>
