@@ -1,32 +1,621 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0c1021">
-<title>FOUR / ENSEMBLE | 4楽器のリズムゲーム</title>
-<link rel="stylesheet" href="styles.css?v=1">
-</head><body>
-<main id="game">
- <div class="top"><div class="logo">FOUR / ENSEMBLE</div><span class="tag">4 TRACKS · 15 NOTES</span></div>
- <div class="systemLine" role="status" aria-live="polite"><span id="systemStatus" class="systemStatus waiting">● 起動処理を確認中…</span><span class="systemHelp">Safari / Chrome 対応</span></div>
- <h1>4つの音を、ひとつに。</h1>
- <p class="sub">ミ ミ ファ ソ ソ ファ ミ レ ド ド レ ミ レ ド ドー<br>4楽器で15音に挑戦！演奏した音とタイミングを記録して、最後に合奏しよう。</p>
- <div class="stages" id="stages"></div>
- <section class="panel">
- <div class="stats"><div><div class="tiny" id="stageLabel">TRACK 01 / 04</div><div class="title" id="instrument">🎹 ピアノ</div></div><div class="score"><span id="score">0</span><small> / 1500</small></div></div>
- <div class="description" id="instructions"></div>
- <div class="track"><canvas id="lane" aria-label="ノートレーン"></canvas><div id="overlay" class="overlay"><strong id="overlayTitle">READY?</strong><span id="overlayText">スタートで4拍カウント</span></div><div id="judge" class="judge"></div></div>
- <div class="progress"><div class="fill" id="progress"></div></div>
- <div class="noteStrip" id="noteStrip"></div>
- <div id="controls" class="controls"></div><p class="hint" id="hint"></p>
- <div class="actions"><button id="start" class="primary" type="button">▶ 演奏スタート</button><button id="retry" class="secondary" type="button">↻ やり直し</button></div>
- <div id="result" class="result"></div>
- <button id="next" class="primary next hidden" type="button">次の楽器へ →</button>
- </section>
- <section class="final" id="final"><h2>🎼 FINAL ENSEMBLE</h2><p id="finalText">4パートの演奏が終わると、記録した自分の演奏を重ねて聴けるで。</p><div id="finalScore" class="finalScore">-- <small>/ 100</small></div><div class="bottomBtns"><button class="primary" id="ensemblePlay" disabled type="button">♫ 合奏を再生</button><button class="secondary" id="ensembleStop" type="button">■ 停止</button></div></section>
- <noscript><div class="nojs">JavaScript が無効になっているため、この画面ではゲームを開始できません。GitHub Pages の公開URLをSafariで開いてください。</div></noscript>
- <div class="foot">BPM <span id="bpmLabel">100</span> · 判定 PERFECT ±45ms / GREAT ±85ms / GOOD ±135ms · 音声合成は端末内</div>
-</main>
-<script defer src="game.js?v=1"></script>
-</body></html>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101426">
+  <meta name="description" content="4つの楽器を一発勝負で録音して合奏。君のアンサンブル — スマホ対応音楽リズムゲーム">
+  <title>君のアンサンブル | 4楽器、一発勝負。</title>
+  <style>
+:root{color-scheme:dark;--bg:#0d1121;--paper:#171f35;--panel:#1c2740;--edge:#354561;--text:#f5f6fa;--muted:#adbed4;--gold:#fad48e;--teal:#70e5d2;--pink:#f18da5;--purple:#b0a5fb}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;background:var(--bg);color:var(--text)}body{background:radial-gradient(ellipse at 0 0,#29315c 0%,transparent 58%),radial-gradient(ellipse at 100% 75%,#20284e 0%,transparent 50%),var(--bg)}button{font:inherit;-webkit-appearance:none;appearance:none;cursor:pointer}button:disabled{cursor:default;opacity:.56}.app{width:min(100%,660px);margin:auto;padding:20px 16px max(35px,env(safe-area-inset-bottom));overflow:hidden}header.header{display:flex;align-items:center;gap:11px}.brand-icon{width:45px;height:45px;border-radius:14px;display:grid;place-items:center;font-size:25px;font-weight:800;background:linear-gradient(145deg,#f9d795,#efb875);color:#202438;box-shadow:0 4px 23px #ffda8c23}.brand{flex:1;min-width:0}.eyebrow,.kicker{font-size:10px;letter-spacing:.16em;font-weight:850;color:#9db4ce}.brand h1{font-size:20px;letter-spacing:.04em;margin:1px 0}.edition{font-size:10px;color:#d9e0ec;border:1px solid #4a5370;padding:7px 10px;border-radius:20px;white-space:nowrap}.intro{margin:22px 0 19px}.hero-kicker{display:inline-flex;gap:7px;align-items:center;color:#f7d394;font-size:10px;letter-spacing:.12em;font-weight:850}.live-dot,.red-dot{display:inline-block;width:7px;height:7px;border-radius:99px;background:#f18da5;box-shadow:0 0 10px #ff9ab4}.intro h2{font-size:clamp(23px,6.7vw,32px);letter-spacing:-.035em;line-height:1.43;margin:7px 0 8px}.intro h2 em{font-style:normal;color:#f9d99f}.intro p{font-size:12px;color:var(--muted);line-height:1.8;margin:0}.tracker{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:0 0 13px}.track-step{min-width:0;min-height:78px;padding:9px 4px;text-align:center;background:#161d31;border:1px solid #34415e;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.track-step.now{background:#2d2d3d;border-color:var(--gold);box-shadow:inset 0 0 0 1px #ffdb9950}.track-step.done{background:#192e36;border-color:#52867f}.track-step b{font-size:23px;line-height:1.1}.track-step strong{font-size:10px;font-weight:750}.track-step small{font-size:9px;color:var(--muted);white-space:nowrap}.track-step.done small{color:#87e3c8}.game-card,.ensemble-card,.final-card{border:1px solid #415273;border-radius:19px;background:linear-gradient(140deg,#1c2842,#131b30);padding:15px;box-shadow:0 17px 40px #0002}.game-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.game-title{font-size:22px;font-weight:850;margin-top:3px}.take-label{font-size:10px;letter-spacing:.14em;color:#e9d59f;font-weight:800;white-space:nowrap;display:flex;align-items:center;gap:7px}.instruction{min-height:36px;font-size:12px;color:#cad7e9;line-height:1.6;margin:10px 0 12px}.chart-head,.input-label{display:flex;justify-content:space-between;align-items:center;font-size:9px;color:#9eb1ce;font-weight:800;letter-spacing:.13em;margin:8px 1px}.input-label{margin-top:14px}.highway{height:222px;position:relative;overflow:hidden;border:1px solid #354761;border-radius:13px;background:#0e182b;touch-action:none}#notesCanvas{width:100%;height:100%;display:block}.overlay{position:absolute;inset:0;background:#101a2acf;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;pointer-events:none}.overlay strong{color:var(--gold);font-size:39px;letter-spacing:.025em}.overlay small{font-size:12px;color:#d7dfec}.overlay.hidden{display:none}.judge{position:absolute;right:13px;top:13px;font-size:17px;font-weight:950;letter-spacing:.07em;text-shadow:0 2px 13px #000;pointer-events:none}.progress{height:5px;border-radius:20px;background:#2c3550;margin:10px 0;overflow:hidden}.progress span{height:100%;width:0;display:block;background:linear-gradient(90deg,#70e5d2,#f9d18a)}.note-legend{display:flex;gap:2px;justify-content:space-between;overflow:hidden;margin:8px 0 4px}.note-legend span{flex:1;min-width:0;text-align:center;border-radius:5px;padding:4px 0;font-size:10px;color:#96acc9}.note-legend span.active{color:#1a2437;background:var(--gold);font-weight:900}.note-legend span.past{opacity:.3}.instrument-controls{min-height:125px;display:flex;align-items:stretch;touch-action:none;-webkit-user-select:none;user-select:none}.key-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%}.piano-key{border:1px solid #e5eafa;border-bottom:7px solid #a5b6d1;background:linear-gradient(180deg,#fff,#d8e0ec);border-radius:10px;color:#1e2d40;font-size:21px;font-weight:900;min-height:125px;touch-action:none}.piano-key.pressed{background:linear-gradient(#f9dfad,#e7b86a);border-bottom-width:3px;transform:translateY(4px)}.drum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}.drum-pad{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;min-height:94px;border:1px solid #6c6486;background:linear-gradient(125deg,#3b3c60,#302f4c);border-radius:13px;color:#f6f1ff;touch-action:none}.drum-pad b{font-size:18px}.drum-pad small{font-size:10px;color:#c7c7e0}.drum-pad.pressed{background:#78608d;box-shadow:inset 0 0 0 2px #ecbdff}.dual{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:11px}.trumpet-choices{display:flex;flex-direction:column;gap:4px}.trumpet-choice{min-height:38px;border:1px solid #4e627e;border-radius:8px;color:#d7e3f5;background:#293650;font-size:15px;font-weight:850;touch-action:manipulation}.trumpet-choice.chosen{background:var(--gold);border-color:#f9e0ac;color:#1b2636}.play-pad{min-height:220px;border:1px solid #607da5;border-radius:13px;background:linear-gradient(160deg,#364a6e,#263955);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;touch-action:none;padding:8px}.play-pad b{font-size:30px}.play-pad strong{font-size:14px;color:#fff}.play-pad small{font-size:11px;color:#c6d8ef;line-height:1.5}.play-pad.pressed{background:#346f70;border-color:#82e8cc}.violin-finger{height:236px;position:relative;border:1px solid #6186a0;border-radius:13px;touch-action:none;background:linear-gradient(180deg,#594d77 0%,#2e6070 49%,#23334f 100%);overflow:hidden}.violin-finger:before{content:'';position:absolute;left:45%;top:14px;bottom:14px;width:2px;background:linear-gradient(#f7d8a8,#a2e8d6);opacity:.55}.f-label{position:absolute;left:10px;font-size:12px;font-weight:850;color:#e9eeff}.f-label.top{top:13px}.f-label.middle{top:50%;transform:translateY(-50%)}.f-label.bottom{bottom:13px}.finger-line{position:absolute;left:0;right:0;height:3px;top:50%;background:#ffdc96;box-shadow:0 0 13px #ffc56f;pointer-events:none;z-index:2}.finger-line:before{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:#ffe7bb;top:-5px;right:9px}.finger-pitch{position:absolute;bottom:5px;right:7px;background:#152236b8;color:#fae2af;font-size:10px;padding:4px;border-radius:5px;pointer-events:none}.bow-pad{height:236px}.play-tip{font-size:11px;line-height:1.6;color:#acc1d8;margin:11px 0 0;min-height:17px}.game-actions{margin-top:15px}.btn{width:100%;min-height:55px;border:0;border-radius:13px;font-weight:900;letter-spacing:.02em;font-size:15px;padding:12px 13px;touch-action:manipulation}.btn-main{background:linear-gradient(100deg,#f9deab,#f6c879);color:#182438;box-shadow:0 6px 26px #f1be6840}.btn-main:active{filter:brightness(.94)}.btn-secondary{background:#222f4b;border:1px solid #5a7096;color:#e5edfb}.recorded-banner{display:flex;align-items:center;gap:11px;margin-top:11px;padding:12px;border-radius:11px;background:#1c3938;border:1px solid #47867e}.recorded-banner>span{font-size:24px;font-weight:900;color:#8af0d3}.recorded-banner b{display:block;font-size:13px}.recorded-banner small{display:block;color:#b9d6ce;font-size:11px;margin-top:3px}.ensemble-card,.final-card{margin-top:14px;text-align:center;padding:22px 16px}.ensemble-illustration{display:flex;justify-content:center;gap:8px;margin:0 0 14px}.ensemble-illustration span{font-size:27px;width:54px;height:54px;display:grid;place-items:center;border:1px solid #52617d;background:#2a3754;border-radius:13px}.ensemble-card .kicker,.final-card .kicker{color:var(--teal)}.ensemble-card h2,.final-card h2{font-size:22px;margin:10px 0}.ensemble-card p{font-size:12px;color:#c3d4e7;line-height:1.9;margin:0 0 17px}.ensemble-card p strong{color:#fff}.playback-bar{height:7px;background:#273957;border-radius:10px;overflow:hidden;margin-top:15px}.playback-bar span{display:block;width:0;height:100%;background:linear-gradient(90deg,#83e3d0,#fbd28f)}.playback-status{margin-top:10px!important;min-height:18px}.score-number{font-weight:950;color:var(--gold);line-height:1.1;margin:15px 0 2px;letter-spacing:-.03em;font-variant-numeric:tabular-nums}.score-number>span{font-size:clamp(47px,12vw,70px)}.score-number small{display:block;font-size:13px;font-weight:700;color:#b6c7db;margin-top:5px}.score-caption{font-size:12px;color:#c6d6e8;margin:13px 0 18px}.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:13px 0}.score-item{border:1px solid #465773;background:#202c46;border-radius:12px;padding:12px;text-align:left}.score-item .emoji{font-size:17px}.score-item .name{font-size:12px;color:#c5d4e8;margin-left:6px}.score-item .value{font-size:25px;font-weight:950;color:#fff;margin-top:4px;font-variant-numeric:tabular-nums}.score-item .value small{font-size:11px;color:#9fafca;margin-left:3px}.formula{background:#121f34;color:#f7d89c;border:1px dashed #72809a;padding:13px 9px;border-radius:10px;font-size:14px;font-weight:850;line-height:1.65;font-variant-numeric:tabular-nums}.score-note{font-size:11px;line-height:1.7;color:#9fb3ce;text-align:left;margin:14px 0 20px}.hidden{display:none!important}footer{display:flex;flex-wrap:wrap;gap:8px 15px;justify-content:center;font-size:10px;text-align:center;color:#8097b5;margin:21px 0 0}#systemStatus{color:#83dcc6}.fatal{color:#fff;background:#552b42;padding:15px;line-height:1.6;margin-top:15px;border-radius:11px}button:focus-visible{outline:3px solid #aaf4ea;outline-offset:3px}@media(max-width:400px){.app{padding:13px 11px 30px}.game-card{padding:12px}.highway{height:194px}.piano-key{min-height:111px;font-size:18px}.track-step{min-height:71px}.track-step b{font-size:20px}.track-step small{font-size:8px}.trumpet-choice{min-height:35px}.play-pad{min-height:207px}.violin-finger,.bow-pad{height:221px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.piano-key.pressed{transform:none}}
+
+</style>
+</head>
+<body>
+  <main class="app" id="app">
+    <header class="header">
+      <div class="brand-icon" aria-hidden="true">♫</div>
+      <div class="brand"><div class="eyebrow">ONE TAKE RHYTHM GAME</div><h1>君のアンサンブル</h1></div>
+      <span class="edition">4 TRACKS</span>
+    </header>
+
+    <section class="intro">
+      <span class="hero-kicker"><span class="live-dot"></span> ONE TAKE SESSION</span>
+      <h2>ひとりで奏でた音が、<br><em>ひとつの音楽になる。</em></h2>
+      <p>「ミ ミ ファ ソ ソ ファ ミ レ ド ド レ ミ レ ド ド」<br>ピアノ・ドラム・トランペット・ヴァイオリンを、やり直しなしで録音しよう。</p>
+    </section>
+
+    <section class="tracker" aria-label="4つの録音パート" id="tracker"></section>
+
+    <section class="game-card" id="gameCard">
+      <div class="game-top">
+        <div class="game-heading"><div id="trackId" class="kicker">TRACK 01 / 04</div><div class="game-title" id="instrumentTitle">🎹 ピアノ</div></div>
+        <div class="take-label" id="takeLabel">TAKE 01 <span class="red-dot"></span></div>
+      </div>
+      <p class="instruction" id="instruction"></p>
+      <div class="chart-head"><span>NOTE HIGHWAY</span><span id="clockLabel">BPM 100</span></div>
+      <div class="highway" id="highway">
+        <canvas id="notesCanvas" aria-label="音符が左の判定線に向かって流れる譜面"></canvas>
+        <div class="overlay" id="overlay" aria-live="polite"><strong id="overlayBig">READY?</strong><small id="overlaySmall">スタートで4拍カウント</small></div>
+        <div class="judge" id="judge" aria-live="off"></div>
+      </div>
+      <div class="progress"><span id="progressBar"></span></div>
+      <div class="note-legend" id="noteLegend"></div>
+      <div class="input-label"><span>YOUR INSTRUMENT</span><span id="inputHint">指で演奏してね</span></div>
+      <div id="instrumentControls" class="instrument-controls"></div>
+      <p class="play-tip" id="playTip"></p>
+      <div class="game-actions">
+        <button class="btn btn-main" id="actionButton" type="button">▶ このパートを演奏</button>
+      </div>
+      <div id="recordedBanner" class="recorded-banner hidden"><span>✓</span><div><b>録音を確定したで</b><small>このパートはもうやり直せません。</small></div></div>
+    </section>
+
+    <section class="ensemble-card hidden" id="ensembleCard">
+      <div class="ensemble-illustration" aria-hidden="true"><span>🎹</span><span>🥁</span><span>🎺</span><span>🎻</span></div>
+      <div class="kicker">FINAL STAGE</div>
+      <h2>さあ、君のアンサンブルを。</h2>
+      <p>4つの一発勝負を録音できた！ <strong>合奏を聴き終わってから</strong>、初めて最終得点が発表されるで。</p>
+      <button class="btn btn-main" id="ensembleButton" type="button">♫ 4パートで演奏開始</button>
+      <div class="playback-bar hidden" id="playbackBar"><span id="playbackFill"></span></div>
+      <p class="playback-status" id="playbackStatus"></p>
+    </section>
+
+    <section class="final-card hidden" id="finalCard" aria-live="polite">
+      <div class="kicker">YOUR FINAL SCORE</div>
+      <h2 id="finalHeadline">君の演奏、おつかれさま！</h2>
+      <div class="score-number"><span id="totalScore">0.00</span><small>/ 100.00</small></div>
+      <p class="score-caption">4パートの掛け算で決まる、君だけの点数。</p>
+      <div class="score-grid" id="scoreGrid"></div>
+      <div class="formula" id="formula"></div>
+      <p class="score-note">各楽器10.0点満点。4つの得点をすべて掛けて100で割ると、最終スコアは100.00点満点。0.0点のパートがあれば総合点も0点になる、一発勝負のルール！</p>
+      <button class="btn btn-secondary" type="button" id="newSession">↻ 新しい公演を始める</button>
+    </section>
+
+    <footer><span id="systemStatus">● 読み込み中…</span><span>PERFECT ±45ms · GREAT ±85ms · GOOD ±135ms</span><span>途中経過はこの端末に記録</span></footer>
+    <noscript><div class="fatal">JavaScriptを有効にして、GitHub PagesのURLをSafariで開いてね。</div></noscript>
+  </main>
+  <script>
+/* 君のアンサンブル — GitHub Pages edition. No external libraries or files. */
+(() => {
+  'use strict';
+  const PITCHES = ['ド','レ','ミ','ファ','ソ'];
+  const FREQS = [261.6256,293.6648,329.6276,349.2282,391.9954];
+  const MELODY = [2,2,3,4,4,3,2,1,0,0,1,2,1,0,0];
+  const DRUMS = [0,3,1,0,2,1,0,3,0,0,1,2,1,0,3]; // 0 kick, 1 snare, 2 tom, 3 cymbal
+  const DRUM_NAMES = ['キック','スネア','タム','シンバル'];
+  const DRUM_ICONS = ['●','✳','◉','✺'];
+  const INSTRUMENTS = [
+    {name:'ピアノ', icon:'🎹', instruction:'判定ラインに来た音符の鍵盤を押そう。押している間は音が鳴り続ける。次の同じ音は押し直してね。', hint:'ド・レ・ミ・ファ・ソ｜長押しで音が持続'},
+    {name:'ドラム', icon:'🥁', instruction:'音符に書かれた4種類のドラムを判定ラインで叩こう。キック・スネア・タム・シンバルを叩き分けてね。', hint:'4種類のパッドをタイミングよくタップ'},
+    {name:'トランペット', icon:'🎺', instruction:'左で「ド〜ソ」を選択してから、右を長押しで吹こう。音が変わるたびに左で選び直し、同じ音を続けるときも右を押し直してね。', hint:'左で音を選ぶ → 右を長押しで発音'},
+    {name:'ヴァイオリン', icon:'🎻', instruction:'左側の縦長エリアで音程を無段階に調節。下がド、真ん中がミ、上がソ。右側を左右に動かすと弓で音が鳴る。音の切り替えと弓返しも判定するで。', hint:'左を上下ドラッグ＋右を左右スワイプ'}
+  ];
+  const BPM = 100, BEAT = 60/BPM, COUNT = 4, LENGTH = 16*BEAT;
+  const STORE_KEY = 'kimi-no-ensemble-one-take-v3';
+  const $ = id => document.getElementById(id);
+  const canvas = $('notesCanvas');
+  const ctx = canvas.getContext('2d');
+  let track=0, phase='ready', startsAt=0, tickId=0, playbackId=0, playbackStart=0;
+  let takes=[null,null,null,null], events=[], samples=[], segments=[], markers=[], pressedPiano=new Map();
+  let context=null, master=null, live=null, soundNodes=[];
+  let trumpetPitch=2, trumpetOn=false, trumpetPointer=null, trumpetSegment=null;
+  let violinPitch=2, violinFingerPointer=null, bowPointer=null, bowLastX=0, bowLastDirection=0, bowTravel=0, bowLastMove=-10000, violinActive=false, violinLastPitchBand=2, bowStrokeMarked=false;
+  let recentFlashAt=0;
+  const now = () => performance.now()/1000;
+  const clamp = (v,lo,hi) => Math.min(hi, Math.max(lo, v));
+  const time = () => now()-startsAt;
+  const isActive = () => phase==='count'||phase==='playing';
+  const expected = i => track===1 ? DRUMS[i] : MELODY[i];
+  function safeStore() { try {localStorage.setItem(STORE_KEY,JSON.stringify({takes,phase: phase==='final'?'final':null,inProgress:phase==='count'||phase==='playing'?track:null}));} catch(_) {} }
+  function restore() {
+    try {
+      const stored=JSON.parse(localStorage.getItem(STORE_KEY)||'null');
+      if(!stored||!Array.isArray(stored.takes)||stored.takes.length!==4) return false;
+      if(stored.takes.some(t=>t!==null && (typeof t.score!=='number'||!Array.isArray(t.events)))) return false;
+      takes=stored.takes;
+      if(Number.isInteger(stored.inProgress)&&stored.inProgress>=0&&stored.inProgress<4&&!takes[stored.inProgress]){
+        const i=stored.inProgress;
+        takes[i]={name:INSTRUMENTS[i].name,events:[],samples:[],segments:[],grades:[],score:0};
+      }
+      track=takes.findIndex(t=>!t);
+      if(track<0) {track=4; phase=stored.phase==='final'?'final':'ensemble';}
+      return true;
+    } catch(_) {return false;}
+  }
+  function ensureAudio(){
+    try {
+      if(!context){
+        const AudioClass=window.AudioContext||window.webkitAudioContext;
+        if(!AudioClass) throw new Error('Web Audio unavailable');
+        context=new AudioClass(); master=context.createGain(); master.gain.value=.4; master.connect(context.destination);
+      }
+      if(context.state==='suspended') context.resume().catch(()=>{});
+      return context;
+    } catch(e){$('playTip').textContent='この環境では音声を利用できへんけど、操作・採点は継続できるで。';return null;}
+  }
+  function keep(node){soundNodes.push(node);if(soundNodes.length>2500) soundNodes.shift();}
+  function stopLive(){
+    if(!live||!context) {live=null;return;}
+    try {live.gain.gain.cancelScheduledValues(context.currentTime);live.gain.gain.setTargetAtTime(.00001,context.currentTime,.02);live.osc.stop(context.currentTime+.18);} catch(_) {}
+    live=null;
+  }
+  function muteAll(){stopLive(); for(const n of soundNodes){try{n.stop(context.currentTime+.012);}catch(_) {}} soundNodes=[];}
+  function wavPitch(position){
+    const low=Math.floor(clamp(position,0,4)),high=Math.min(4,low+1),blend=clamp(position-low,0,1);
+    return FREQS[low]*Math.pow(FREQS[high]/FREQS[low],blend);
+  }
+  function sustainedTone(hz,type){
+    if(!context||!master)return null;
+    const osc=context.createOscillator(),filter=context.createBiquadFilter(),gain=context.createGain();
+    osc.type=type==='piano'?'triangle':type==='trumpet'?'sawtooth':'sawtooth';
+    osc.frequency.value=hz;
+    filter.type='lowpass'; filter.frequency.value=type==='piano'?2600:type==='trumpet'?1200:1900;
+    gain.gain.value=.00001;
+    osc.connect(filter);filter.connect(gain);gain.connect(master);
+    osc.start(); gain.gain.setTargetAtTime(type==='piano'?.29:type==='trumpet'?.16:.12,context.currentTime,type==='piano'?.008:.035);
+    return {osc,gain};
+  }
+  function endTone(tone){
+    if(!tone||!context)return;
+    try{tone.gain.gain.setTargetAtTime(.00001,context.currentTime,.018);tone.osc.stop(context.currentTime+.15);}catch(_){}
+  }
+  function fixedTone(hz,start,duration,type){
+    if(!context||!master) return;
+    const t=Math.max(context.currentTime+.006,start),d=Math.max(.045,duration);
+    const o=context.createOscillator(), f=context.createBiquadFilter(), g=context.createGain();
+    o.type=type==='piano'?'triangle':'sawtooth';o.frequency.value=hz;
+    f.type='lowpass';f.frequency.value=type==='piano'?2800:type==='trumpet'?1250:1950;
+    let peak=type==='piano'?.29:type==='trumpet'?.16:.12;
+    g.gain.setValueAtTime(.0001,t);
+    g.gain.linearRampToValueAtTime(peak,t+.012);
+    if(d>.12)g.gain.setValueAtTime(peak*.82,t+d-.06);
+    g.gain.exponentialRampToValueAtTime(.0001,t+d+.09);
+    o.connect(f);f.connect(g);g.connect(master);o.start(t);o.stop(t+d+.12);keep(o);
+  }
+  function drumSound(kind,t){
+    if(!context||!master)return;
+    const at=Math.max(t,context.currentTime+.005),o=context.createOscillator(),g=context.createGain();
+    o.type=(kind===2)?'triangle':'sine';
+    const f=kind===0?155:kind===1?220:kind===2?300:400;
+    o.frequency.setValueAtTime(f,at);o.frequency.exponentialRampToValueAtTime(kind===0?48:kind===1?115:kind===2?90:180,at+.15);
+    const amp=kind===3?.055:kind===0?.53:.25;
+    g.gain.setValueAtTime(amp,at);g.gain.exponentialRampToValueAtTime(.0001,at+.17);
+    o.connect(g);g.connect(master);o.start(at);o.stop(at+.18);keep(o);
+    const size=Math.round(context.sampleRate*(kind===3?.4:.14)),buffer=context.createBuffer(1,size,context.sampleRate),data=buffer.getChannelData(0);
+    for(let i=0;i<size;i++)data[i]=Math.random()*2-1;
+    const ns=context.createBufferSource(),filter=context.createBiquadFilter(),ng=context.createGain();
+    ns.buffer=buffer;filter.type='highpass';filter.frequency.value=kind===0?750:kind===1?1900:kind===2?500:4100;
+    ng.gain.setValueAtTime(kind===3?.22:kind===1?.21:.065,at);
+    ng.gain.exponentialRampToValueAtTime(.0001,at+(kind===3?.37:.12));
+    ns.connect(filter);filter.connect(ng);ng.connect(master);ns.start(at);ns.stop(at+(kind===3?.39:.13));keep(ns);
+  }
+  function clickSound(start,accent){
+    if(!context)return;
+    const t=Math.max(start,context.currentTime+.005),o=context.createOscillator(),g=context.createGain();
+    o.type='sine';o.frequency.value=accent?1040:760;
+    g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(accent?.145:.073,t+.004);g.gain.exponentialRampToValueAtTime(.0001,t+.055);
+    o.connect(g);g.connect(master);o.start(t);o.stop(t+.06);keep(o);
+  }
+  function refreshLive(){
+    if(phase!=='playing'||(track!==2&&track!==3)) {stopLive();return;}
+    const shouldPlay = track===2?trumpetOn:violinActive;
+    const p = track===2?trumpetPitch:violinPitch;
+    if(!shouldPlay){stopLive();return;}
+    if(!context)return;
+    if(!live)live=sustainedTone(wavPitch(p),track===2?'trumpet':'violin');
+    if(live)live.osc.frequency.setTargetAtTime(wavPitch(p),context.currentTime,.012);
+  }
+  function resetControls(){
+    for(const press of pressedPiano.values()) endTone(press.tone);
+    pressedPiano.clear(); trumpetPitch=2;trumpetOn=false;trumpetPointer=null;trumpetSegment=null;
+    violinPitch=2;violinFingerPointer=null;bowPointer=null;bowLastDirection=0;bowTravel=0;bowLastMove=-10000;violinActive=false;violinLastPitchBand=2;bowStrokeMarked=false;stopLive();
+  }
+  function placeTracker(){
+    $('tracker').innerHTML=INSTRUMENTS.map((m,i)=>`<div class="track-step ${takes[i]?'done':i===track?'now':''}"><b>${m.icon}</b><strong>${m.name}</strong><small>${takes[i]?'✓ 録音完了':i===track?'● REC 準備':'TRACK 0'+(i+1)}</small></div>`).join('');
+  }
+  function strip(){
+    $('noteLegend').innerHTML=MELODY.map((n,i)=>`<span data-note="${i}">${PITCHES[n]}</span>`).join('');
+  }
+  function flash(){recentFlashAt=performance.now();$('judge').textContent='♪';$('judge').style.color='#f9d18a';}
+  function captureEvent(p,kind='hit'){
+    if(phase!=='playing')return null;
+    const t=time(); if(t<-0.16||t>LENGTH+.1)return null;
+    const entry={t,p,kind,d:.12};events.push(entry);flash();return entry;
+  }
+  function captureMarker(p,kind){
+    if(phase!=='playing')return;
+    markers.push({t:time(),p,kind});flash();
+  }
+  function attachNotePress(el,onDown,onUp){
+    const active=new Set();
+    el.addEventListener('pointerdown',e=>{
+      e.preventDefault();if(!isActive())return;
+      if(active.has(e.pointerId))return;
+      active.add(e.pointerId);el.classList.add('pressed');
+      try{el.setPointerCapture(e.pointerId)}catch(_){}
+      onDown(e);
+    });
+    const stop=e=>{
+      if(!active.has(e.pointerId))return;
+      active.delete(e.pointerId);if(!active.size)el.classList.remove('pressed');
+      if(onUp)onUp(e);
+    };
+    el.addEventListener('pointerup',stop);el.addEventListener('pointercancel',stop);
+    el.addEventListener('lostpointercapture',stop);
+  }
+  function renderPiano(control){
+    control.innerHTML=`<div class="key-row">${PITCHES.map((p,i)=>`<button type="button" class="piano-key" data-p="${i}">${p}</button>`).join('')}</div>`;
+    control.querySelectorAll('.piano-key').forEach(key=>{
+      let activePointer=null;
+      key.addEventListener('pointerdown',e=>{
+        e.preventDefault();if(phase!=='playing'||activePointer!==null)return;
+        activePointer=e.pointerId;
+        key.classList.add('pressed');
+        try{key.setPointerCapture(e.pointerId)}catch(_){}
+        const p=Number(key.dataset.p),entry=captureEvent(p,'piano'),tone=sustainedTone(FREQS[p],'piano');
+        pressedPiano.set(e.pointerId,{entry,tone});
+      });
+      const stop=e=>{
+        if(activePointer!==e.pointerId)return;
+        activePointer=null;key.classList.remove('pressed');
+        const press=pressedPiano.get(e.pointerId);if(press){
+          if(press.entry)press.entry.d=clamp(time()-press.entry.t,.03,LENGTH);
+          endTone(press.tone);pressedPiano.delete(e.pointerId);
+        }
+      };
+      key.addEventListener('pointerup',stop);key.addEventListener('pointercancel',stop);key.addEventListener('lostpointercapture',stop);
+    });
+  }
+  function renderDrums(control){
+    control.innerHTML=`<div class="drum-grid">${DRUM_NAMES.map((n,i)=>`<button type="button" data-p="${i}" class="drum-pad"><b>${['🥁','✳','◉','✨'][i]} ${n}</b><small>${['低いキック','鋭いスネア','響くタム','長い余韻'][i]}</small></button>`).join('')}</div>`;
+    control.querySelectorAll('button').forEach(el=>attachNotePress(el,()=>{
+      if(phase!=='playing')return;
+      const p=Number(el.dataset.p);captureEvent(p,'drum');drumSound(p,context?context.currentTime:0);
+    }));
+  }
+  function renderTrumpet(control){
+    control.innerHTML=`<div class="dual"><div class="trumpet-choices" id="trumpetChoices">${[4,3,2,1,0].map(p=>`<button class="trumpet-choice ${p===2?'chosen':''}" type="button" data-p="${p}">${PITCHES[p]}</button>`).join('')}</div><div class="play-pad" id="trumpetBlow"><b>🎺</b><strong>右指で長押し</strong><small>押している間だけ<br>音が出る</small></div></div>`;
+    control.querySelectorAll('.trumpet-choice').forEach(b=>{
+      const choose=e=>{
+        e.preventDefault();if(!['ready','count','playing'].includes(phase))return;
+        const next=Number(b.dataset.p);if(next===trumpetPitch)return;
+        if(trumpetOn&&phase==='playing'){
+          closeTrumpetSegment();captureMarker(next,'pitch-change');startTrumpetSegment(next);
+        }
+        trumpetPitch=next;
+        control.querySelectorAll('.trumpet-choice').forEach(x=>x.classList.toggle('chosen',Number(x.dataset.p)===next));
+        refreshLive();
+      };
+      b.addEventListener('pointerdown',choose);
+      b.addEventListener('click',e=>{if(e.detail===0)choose(e)});
+    });
+    const pad=$('trumpetBlow');
+    pad.addEventListener('pointerdown',e=>{
+      e.preventDefault();if(!isActive()||trumpetPointer!==null)return;
+      trumpetPointer=e.pointerId;trumpetOn=true;pad.classList.add('pressed');
+      try{pad.setPointerCapture(e.pointerId)}catch(_){}
+      if(phase==='playing'){captureMarker(trumpetPitch,'breath');startTrumpetSegment(trumpetPitch)}
+      refreshLive();
+    });
+    const stop=e=>{
+      if(trumpetPointer!==e.pointerId)return;
+      trumpetPointer=null;trumpetOn=false;pad.classList.remove('pressed');closeTrumpetSegment();refreshLive();
+    };
+    pad.addEventListener('pointerup',stop);pad.addEventListener('pointercancel',stop);pad.addEventListener('lostpointercapture',stop);
+  }
+  function startTrumpetSegment(p){if(phase==='playing')trumpetSegment={t:Math.max(0,time()),p,d:0};}
+  function closeTrumpetSegment(){
+    if(!trumpetSegment)return;
+    trumpetSegment.d=Math.max(.0,time()-trumpetSegment.t);
+    if(trumpetSegment.d>.028)segments.push(trumpetSegment);
+    trumpetSegment=null;
+  }
+  function renderViolin(control){
+    control.innerHTML=`<div class="dual"><div class="violin-finger" id="violinFinger" aria-label="音程スライダー、上ソ、中ミ、下ド"><span class="f-label top">ソ</span><span class="f-label middle">ミ</span><span class="f-label bottom">ド</span><div class="finger-line" id="fingerLine"></div><span class="finger-pitch" id="fingerPitch">ミ</span></div><div class="play-pad bow-pad" id="violinBow"><b>🎻</b><strong>左右にスワイプ</strong><small>右指を動かす間だけ<br>弓の音が出る</small></div></div>`;
+    const left=$('violinFinger'),right=$('violinBow');
+    function slide(y){
+      const r=left.getBoundingClientRect();
+      const pitch=clamp((1-(y-r.top)/r.height)*4,0,4);
+      violinPitch=pitch;
+      $('fingerLine').style.top=((1-pitch/4)*100)+'%';
+      const nearest=Math.round(pitch);
+      $('fingerPitch').textContent=`${PITCHES[nearest]} · ${pitch.toFixed(2)}`;
+      const band=Math.abs(pitch-nearest)<=.18?nearest:null;
+      if(band!==null && band!==violinLastPitchBand && phase==='playing'&&violinActive)captureMarker(pitch,'slide');
+      violinLastPitchBand=band;
+      refreshLive();
+    }
+    left.addEventListener('pointerdown',e=>{
+      e.preventDefault();if(!['ready','count','playing'].includes(phase)||violinFingerPointer!==null)return;
+      violinFingerPointer=e.pointerId;
+      try{left.setPointerCapture(e.pointerId)}catch(_){}
+      slide(e.clientY);
+    });
+    left.addEventListener('pointermove',e=>{if(e.pointerId===violinFingerPointer){e.preventDefault();slide(e.clientY)}});
+    const stopL=e=>{if(e.pointerId===violinFingerPointer)violinFingerPointer=null};
+    left.addEventListener('pointerup',stopL);left.addEventListener('pointercancel',stopL);left.addEventListener('lostpointercapture',stopL);
+    right.addEventListener('pointerdown',e=>{
+      e.preventDefault();if(!isActive()||bowPointer!==null)return;
+      bowPointer=e.pointerId;bowLastX=e.clientX;bowLastDirection=0;bowTravel=0;bowStrokeMarked=false;bowLastMove=performance.now()-1000;
+      try{right.setPointerCapture(e.pointerId)}catch(_){}
+    });
+    right.addEventListener('pointermove',e=>{
+      if(e.pointerId!==bowPointer||!isActive())return;
+      e.preventDefault();
+      const dx=e.clientX-bowLastX;bowLastX=e.clientX;
+      if(Math.abs(dx)<1.1)return;
+      const dir=dx>0?1:-1;
+      if(dir!==bowLastDirection){bowTravel=0;bowLastDirection=dir;bowStrokeMarked=false;}
+      bowTravel+=Math.abs(dx);
+      bowLastMove=performance.now();
+      violinActive=true;
+      right.classList.add('pressed');
+      if(phase==='playing'&&bowTravel>=9&&!bowStrokeMarked){
+        captureMarker(violinPitch,'bow-stroke');bowStrokeMarked=true;
+      }
+      refreshLive();
+    });
+    const stopR=e=>{
+      if(bowPointer!==e.pointerId)return;
+      bowPointer=null;violinActive=false;bowLastMove=-10000;
+      bowStrokeMarked=false;
+      right.classList.remove('pressed');refreshLive();
+    };
+    right.addEventListener('pointerup',stopR);right.addEventListener('pointercancel',stopR);right.addEventListener('lostpointercapture',stopR);
+  }
+  function renderControls(){
+    const control=$('instrumentControls');control.innerHTML='';
+    if(track===0)renderPiano(control);
+    if(track===1)renderDrums(control);
+    if(track===2)renderTrumpet(control);
+    if(track===3)renderViolin(control);
+  }
+  function resetTrack(){
+    cancelAnimationFrame(tickId);tickId=0;
+    resetControls();events=[];samples=[];segments=[];markers=[];
+    phase='ready';
+    $('gameCard').classList.remove('hidden');$('ensembleCard').classList.add('hidden');$('finalCard').classList.add('hidden');
+    $('recordedBanner').classList.add('hidden');
+    $('instrumentTitle').textContent=INSTRUMENTS[track].icon+' '+INSTRUMENTS[track].name;
+    $('trackId').textContent=`TRACK 0${track+1} / 04`;
+    $('instruction').textContent=INSTRUMENTS[track].instruction;
+    $('inputHint').textContent=INSTRUMENTS[track].hint;
+    $('playTip').textContent=track===2?'同じ音が続くときも、右指を一度離してもう一度吹こう。':track===3?'上＝ソ、真ん中＝ミ、下＝ド。途中の位置なら音程は滑らかに変わるで。':'音符に合わせてタイミングと楽器を正確に合わせよう。';
+    $('clockLabel').textContent=`BPM ${BPM} · ${track===1?'4 PADS':'5 NOTES'}`;
+    $('noteLegend').classList.toggle('hidden',track===1);
+    $('actionButton').disabled=false;$('actionButton').textContent='▶ このパートを演奏';
+    $('progressBar').style.width='0%';
+    $('overlay').classList.remove('hidden');$('overlayBig').textContent='READY?';$('overlaySmall').textContent='スタートで4拍カウント';$('judge').textContent='';
+    placeTracker();strip();renderControls();draw(-BEAT*1.5);
+  }
+  function startTrack(){
+    if(phase!=='ready'||takes[track])return;
+    ensureAudio();phase='count';
+    events=[];samples=[];segments=[];markers=[];
+    startsAt=now()+COUNT*BEAT;
+    safeStore();
+    if(context){
+      const at=context.currentTime+.055;
+      for(let i=0;i<COUNT+16;i++)clickSound(at+i*BEAT,i%4===0);
+    }
+    $('actionButton').disabled=true;$('actionButton').textContent='録音中… 一発勝負！';
+    $('overlay').classList.remove('hidden');
+    cancelAnimationFrame(tickId);tickId=requestAnimationFrame(frame);
+  }
+  function beginPlay(){
+    phase='playing';$('overlay').classList.add('hidden');
+    if(track===2&&trumpetOn){captureMarker(trumpetPitch,'breath');startTrumpetSegment(trumpetPitch)}
+    refreshLive();
+  }
+  function takeSample(t){
+    if(track===2)samples.push({t,p:trumpetPitch,active:trumpetOn});
+    if(track===3){
+      if(violinActive && performance.now()-bowLastMove>105){
+        violinActive=false;bowStrokeMarked=false;$('violinBow').classList.remove('pressed');refreshLive();
+      }
+      samples.push({t,p:violinPitch,active:violinActive});
+    }
+  }
+  function timeGrade(d){
+    const ad=Math.abs(d);
+    if(ad<=.045)return 10;
+    if(ad<=.085)return 8;
+    if(ad<=.135)return 5;
+    return 0;
+  }
+  function gradeTapTrack(){
+    const used=new Set();const scored=[];
+    for(let i=0;i<MELODY.length;i++){
+      const target=i*BEAT,p=expected(i);
+      const possibilities=events.map((e,j)=>({e,j,dt:e.t-target})).filter(x=>!used.has(x.j)&&Math.abs(x.dt)<=.155).sort((a,b)=>Math.abs(a.dt)-Math.abs(b.dt));
+      const chosen=possibilities[0];
+      if(chosen) used.add(chosen.j);
+      scored.push({points:chosen&&chosen.e.p===p?timeGrade(chosen.dt):0,delta:chosen?chosen.dt:null,p});
+    }
+    return scored;
+  }
+  function gradeHoldTrack(){
+    const used=new Set();const scored=[];
+    for(let i=0;i<MELODY.length;i++){
+      const start=i*BEAT,end=(i===14?16:i+1)*BEAT,target=MELODY[i];
+      const choices=markers.map((e,j)=>({e,j,dt:e.t-start})).filter(x=>!used.has(x.j)&&Math.abs(x.dt)<=.155).sort((a,b)=>Math.abs(a.dt)-Math.abs(b.dt));
+      const chosen=choices[0];if(chosen)used.add(chosen.j);
+      let points=chosen && (track===2?chosen.e.p===target:Math.abs(chosen.e.p-target)<=.24)?timeGrade(chosen.dt):0;
+      const inWindow=samples.filter(x=>x.t>=start+.045&&x.t<=end-.045);
+      const correct=inWindow.filter(x=>x.active&&(track===2?x.p===target:Math.abs(x.p-target)<=.22));
+      const coverage=inWindow.length?correct.length/inWindow.length:0;
+      if(coverage<.50) points=0;
+      else if(coverage<.67) points=Math.min(points,5);
+      else if(coverage<.82) points=Math.min(points,8);
+      scored.push({points,delta:chosen?chosen.dt:null,p:target,coverage});
+    }
+    return scored;
+  }
+  function finishTrack(){
+    if(phase!=='playing'&&phase!=='count')return;
+    if(phase==='count')phase='playing';
+    const t=Math.max(0,time());
+    if(track===2)closeTrumpetSegment();
+    for(const [id,press] of pressedPiano){if(press.entry)press.entry.d=clamp(t-press.entry.t,.03,LENGTH);endTone(press.tone);}
+    pressedPiano.clear();stopLive();
+    const scored=(track===0||track===1)?gradeTapTrack():gradeHoldTrack();
+    const raw=scored.reduce((total,g)=>total+g.points,0)/MELODY.length;
+    const score=Math.round(raw*10)/10;
+    takes[track]={name:INSTRUMENTS[track].name,events:events.slice(),samples:track===3?samples.slice():[],segments:segments.slice(),grades:scored,score};
+    phase='recorded';cancelAnimationFrame(tickId);tickId=0;safeStore();
+    $('progressBar').style.width='100%';
+    $('overlay').classList.remove('hidden');$('overlayBig').textContent='REC SAVED';$('overlayBig').style.fontSize='29px';
+    $('overlaySmall').textContent=`${INSTRUMENTS[track].name}を録音したで`; $('judge').textContent='';
+    $('recordedBanner').classList.remove('hidden');
+    $('actionButton').disabled=false;
+    $('actionButton').textContent=track===3?'♫ 4パートの合奏へ':'次の楽器へ →';
+    placeTracker();
+  }
+  function advance(){
+    if(phase!=='recorded')return;
+    if(track<3){track++;resetTrack();$('gameCard').scrollIntoView({behavior:'smooth',block:'start'});}
+    else{track=4;phase='ensemble';safeStore();showEnsemble();}
+  }
+  function showEnsemble(){
+    placeTracker();$('gameCard').classList.add('hidden');$('ensembleCard').classList.remove('hidden');$('finalCard').classList.add('hidden');
+    $('playbackBar').classList.add('hidden');$('playbackStatus').textContent='4パートすべて録音済み。やり直しはできません。';
+    $('ensembleButton').disabled=false;$('ensembleButton').textContent='♫ 4パートで演奏開始';
+    $('ensembleCard').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function scheduleViolinSamples(data,at){
+    if(!context||!data.length)return;
+    let groups=[],current=[];
+    for(const s of data){
+      if(!s.active || (current.length&&s.t-current[current.length-1].t>.08)){
+        if(current.length)groups.push(current);current=[];
+      }
+      if(s.active)current.push(s);
+    }
+    if(current.length)groups.push(current);
+    for(const group of groups){
+      if(group.length<3)continue;
+      const start=Math.max(context.currentTime+.005,at+group[0].t),end=Math.max(start+.045,at+group[group.length-1].t+.04);
+      const o=context.createOscillator(),f=context.createBiquadFilter(),g=context.createGain();o.type='sawtooth';
+      o.frequency.setValueAtTime(wavPitch(group[0].p),start);
+      for(let i=1;i<group.length;i+=2)o.frequency.linearRampToValueAtTime(wavPitch(group[i].p),Math.max(start+.001,at+group[i].t));
+      f.type='lowpass';f.frequency.value=1900;
+      g.gain.setValueAtTime(.0001,start);g.gain.linearRampToValueAtTime(.12,start+.023);
+      g.gain.setValueAtTime(.12,Math.max(start+.024,end-.07));g.gain.exponentialRampToValueAtTime(.0001,end+.06);
+      o.connect(f);f.connect(g);g.connect(master);o.start(start);o.stop(end+.07);keep(o);
+    }
+  }
+  function playEnsemble(){
+    if(phase!=='ensemble'||takes.some(x=>!x))return;
+    ensureAudio();phase='playback';
+    $('ensembleButton').disabled=true;$('ensembleButton').textContent='♫ 合奏中…';
+    $('playbackBar').classList.remove('hidden');$('playbackStatus').textContent='君が実際に弾いた音が重なっているで…';
+    playbackStart=now();
+    const base=context?context.currentTime+.16:0;
+    if(context){
+      takes.forEach((tk,i)=>{
+        if(i===0)tk.events.forEach(e=>{if(e.t>=0&&e.t<=LENGTH+.1)fixedTone(wavPitch(e.p),base+e.t,clamp(e.d,.04,LENGTH),'piano')});
+        if(i===1)tk.events.forEach(e=>{if(e.t>=0&&e.t<=LENGTH+.1)drumSound(e.p,base+e.t)});
+        if(i===2)tk.segments.forEach(e=>{if(e.t>=0&&e.t<=LENGTH+.1)fixedTone(wavPitch(e.p),base+e.t,Math.min(LENGTH,e.d),'trumpet')});
+        if(i===3)scheduleViolinSamples(tk.samples,base);
+      });
+    }
+    cancelAnimationFrame(tickId);tickId=requestAnimationFrame(ensembleFrame);
+    clearTimeout(playbackId);playbackId=setTimeout(showFinal,(LENGTH+.40)*1000);
+  }
+  function ensembleFrame(){
+    if(phase!=='playback')return;
+    let progress=clamp((now()-playbackStart)/LENGTH,0,1);
+    $('playbackFill').style.width=(progress*100)+'%';
+    tickId=requestAnimationFrame(ensembleFrame);
+  }
+  function showFinal(){
+    if(phase!=='playback'&&phase!=='final')return;
+    phase='final';cancelAnimationFrame(tickId);tickId=0;clearTimeout(playbackId);
+    $('ensembleCard').classList.add('hidden');$('finalCard').classList.remove('hidden');
+    const scores=takes.map(t=>Number(t.score.toFixed(1)));
+    const total=Number((scores.reduce((a,b)=>a*b,1)/100).toFixed(2));
+    $('totalScore').textContent=total.toFixed(2);
+    $('scoreGrid').innerHTML=takes.map((tk,i)=>`<div class="score-item"><div><span class="emoji">${INSTRUMENTS[i].icon}</span><span class="name">${tk.name}</span></div><div class="value">${scores[i].toFixed(1)}<small>/ 10.0</small></div></div>`).join('');
+    $('formula').textContent=`${scores.map(x=>x.toFixed(1)).join(' × ')} ÷ 100 = ${total.toFixed(2)} 点`;
+    $('finalHeadline').textContent=total===100?'PERFECT ENSEMBLE!':total>=70?'めっちゃええ演奏！':total>=30?'君らしいアンサンブル！':'最後まで演奏、おつかれさま！';
+    safeStore();$('finalCard').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function newSession(){
+    if(phase!=='final')return;
+    if(context)muteAll();takes=[null,null,null,null];track=0;
+    try{localStorage.removeItem(STORE_KEY)}catch(_){}
+    resetTrack();window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function frame(){
+    if(!isActive())return;
+    const t=time();
+    if(phase==='count'){
+      $('overlayBig').textContent=String(clamp(Math.ceil(-t/BEAT),1,4));
+      $('overlaySmall').textContent='4拍カウント · 演奏準備！';
+      if(t>=0)beginPlay();
+    }
+    if(phase==='playing'){
+      takeSample(t);
+      if(performance.now()-recentFlashAt>220)$('judge').textContent='';
+      if(t>=LENGTH+.16){finishTrack();return;}
+    }
+    $('progressBar').style.width=(clamp(t/LENGTH,0,1)*100)+'%';
+    const i=Math.floor(clamp(t/BEAT,0,14));
+    $('noteLegend').querySelectorAll('span').forEach((s,j)=>{
+      s.classList.toggle('active',phase==='playing'&&j===i);
+      s.classList.toggle('past',phase==='playing'&&j<i);
+    });
+    draw(t);
+    tickId=requestAnimationFrame(frame);
+  }
+  function draw(t){
+    const r=canvas.getBoundingClientRect(),w=r.width,h=r.height;
+    if(w<10||h<10)return;
+    const ratio=Math.min(2,window.devicePixelRatio||1);
+    if(canvas.width!==Math.round(w*ratio)||canvas.height!==Math.round(h*ratio)){canvas.width=Math.round(w*ratio);canvas.height=Math.round(h*ratio)}
+    ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,w,h);
+    const rows=track===1?4:5,rowH=h/rows,hit=Math.min(76,w*.22),step=Math.min(72,Math.max(53,w/5));
+    for(let j=0;j<rows;j++){
+      ctx.fillStyle=j%2===0?'#14253c':'#101c31';ctx.fillRect(0,j*rowH,w,rowH);
+      ctx.strokeStyle='#31435f';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,j*rowH+rowH);ctx.lineTo(w,j*rowH+rowH);ctx.stroke();
+      ctx.font='bold 10px system-ui';ctx.textAlign='left';ctx.fillStyle='#8ba6c8';
+      const label=track===1?DRUM_NAMES[3-j]:PITCHES[4-j];
+      ctx.fillText(label,7,(j+.57)*rowH);
+    }
+    const fraction=t/BEAT;
+    for(let beatIndex=0;beatIndex<=16;beatIndex++){
+      const x=hit+(beatIndex-fraction)*step;if(x<0||x>w)continue;
+      ctx.strokeStyle=beatIndex%4===0?'#6c7796':'#344760';ctx.lineWidth=beatIndex%4===0?1.4:1;
+      ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();
+      if(beatIndex%4===0){ctx.fillStyle='#8294b0';ctx.font='9px system-ui';ctx.fillText(String(beatIndex/4+1),x+3,10);}
+    }
+    for(let i=0;i<MELODY.length;i++){
+      const x=hit+(i-fraction)*step,p=expected(i),y=(rows-1-p+.5)*rowH;
+      const len=(i===14?1.35:.63)*step;
+      if(x+len/2<0||x-len/2>w)continue;
+      const x0=x-len/2,rad=7;
+      ctx.fillStyle=track===1?'#bdb5fd':'#f5d28d';
+      ctx.beginPath();ctx.moveTo(x0+rad,y-12);ctx.lineTo(x0+len-rad,y-12);ctx.quadraticCurveTo(x0+len,y-12,x0+len,y-12+rad);ctx.lineTo(x0+len,y+12-rad);ctx.quadraticCurveTo(x0+len,y+12,x0+len-rad,y+12);ctx.lineTo(x0+rad,y+12);ctx.quadraticCurveTo(x0,y+12,x0,y+12-rad);ctx.lineTo(x0,y-12+rad);ctx.quadraticCurveTo(x0,y-12,x0+rad,y-12);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#19263c';ctx.textAlign='center';ctx.font='bold 11px system-ui';
+      ctx.fillText(track===1?DRUM_ICONS[p]:PITCHES[p],x,y+4);
+    }
+    ctx.fillStyle='#ffdc94';ctx.fillRect(hit-2,0,4,h);
+    ctx.beginPath();ctx.moveTo(hit-9,0);ctx.lineTo(hit+9,0);ctx.lineTo(hit,11);ctx.fill();
+  }
+  window.addEventListener('error',e=>{$('systemStatus').textContent='● エラーが発生：'+(e.message||'再読み込みしてね');$('systemStatus').style.color='#fa9caf';});
+  $('actionButton').addEventListener('click',()=>{if(phase==='ready')startTrack();else if(phase==='recorded')advance()});
+  $('ensembleButton').addEventListener('click',playEnsemble);
+  $('newSession').addEventListener('click',newSession);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&isActive())finishTrack()});
+  window.addEventListener('resize',()=>{if(phase==='ready')draw(-1.5*BEAT)});
+  restore();
+  if(phase==='ensemble'){showEnsemble();}
+  else if(phase==='final') {showFinal();}
+  else {resetTrack();}
+  $('systemStatus').textContent='● ゲーム起動OK';
+})();
+
+</script>
+</body>
+</html>
